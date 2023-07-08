@@ -4,7 +4,7 @@
 # Pre = T stands for pre-treatment period
 # treat = F  stands for control group
 
-wols_rc <- function(y, post, D, int.cov, pscore, i.weights, pre = NULL, treat = F){
+wols_rc <- function(y, post, D, int.cov, pscore, i.weights, pre = NULL, treat = F, familly = "gaussian"){
   #-----------------------------------------------------------------------------
   # Do not divide by zero
   #pscore <- pmin(pscore, 1 - 1e-16)
@@ -23,9 +23,9 @@ wols_rc <- function(y, post, D, int.cov, pscore, i.weights, pre = NULL, treat = 
     subs <- (D==0)*(post==1)
   }
   #Run weighted OLS
-  beta.wls <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  beta.wls <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                     subset = subs==1,
-                                    weights = or.weights))
+                                    weights = or.weights, familly = familly))
   if(anyNA(beta.wls)){
     stop("Outcome regression model coefficients have NA components. \n Multicollinearity (or lack of variation) of covariates is a likely reason")
   }
