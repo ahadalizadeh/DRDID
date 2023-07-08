@@ -25,7 +25,7 @@ wols_rc <- function(y, post, D, int.cov, pscore, i.weights, pre = NULL, treat = 
   #Run weighted OLS
   beta.wls <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                     subset = subs==1,
-                                    weights = or.weights, familly = family))
+                                    weights = or.weights, family = family))
   if(anyNA(beta.wls)){
     stop("Outcome regression model coefficients have NA components. \n Multicollinearity (or lack of variation) of covariates is a likely reason")
   }
