@@ -61,7 +61,7 @@ NULL
 
 drdid_rc <-function(y, post, D, covariates, i.weights = NULL,
                     boot = FALSE, boot.type =  "weighted", nboot = NULL,
-                    inffunc = FALSE){
+                    inffunc = FALSE,  family = "gaussian"){
   #-----------------------------------------------------------------------------
   # D as vector
   D <- as.vector(D)
@@ -98,17 +98,17 @@ drdid_rc <-function(y, post, D, covariates, i.weights = NULL,
   # Avoid divide by zero
   ps.fit <- pmin(ps.fit, 1 - 1e-16)
   #Compute the Outcome regression for the control group at the pre-treatment period, using ols.
-  reg.cont.coeff.pre <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.cont.coeff.pre <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                               subset = ((D==0) & (post==0)),
-                                              weights = i.weights))
+                                              weights = i.weights,  family = family))
   if(anyNA(reg.cont.coeff.pre)){
     stop("Outcome regression model coefficients have NA components. \n Multicollinearity (or lack of variation) of covariates is a likely reason.")
   }
   out.y.cont.pre <-   as.vector(tcrossprod(reg.cont.coeff.pre, int.cov))
   #Compute the Outcome regression for the control group at the post-treatment period, using ols.
-  reg.cont.coeff.post <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.cont.coeff.post <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                                subset = ((D==0) & (post==1)),
-                                               weights = i.weights))
+                                               weights = i.weights,  family = family))
   if(anyNA(reg.cont.coeff.post)){
     stop("Outcome regression model coefficients have NA components. \n Multicollinearity (or lack of variation) of covariates is a likely reason.")
   }
@@ -118,14 +118,14 @@ drdid_rc <-function(y, post, D, covariates, i.weights = NULL,
 
 
   #Compute the Outcome regression for the treated group at the pre-treatment period, using ols.
-  reg.treat.coeff.pre <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.treat.coeff.pre <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                                subset = ((D==1) & (post==0)),
-                                               weights = i.weights))
+                                               weights = i.weights,  family = family))
   out.y.treat.pre <-   as.vector(tcrossprod(reg.treat.coeff.pre, int.cov))
   #Compute the Outcome regression for the treated group at the post-treatment period, using ols.
-  reg.treat.coeff.post <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.treat.coeff.post <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                                 subset = ((D==1) & (post==1)),
-                                                weights = i.weights))
+                                                weights = i.weights,  family = family))
   out.y.treat.post <-   as.vector(tcrossprod(reg.treat.coeff.post, int.cov))
 
 
