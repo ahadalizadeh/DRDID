@@ -60,7 +60,7 @@ NULL
 
 drdid_rc1 <-function(y, post, D, covariates, i.weights = NULL,
                      boot = FALSE, boot.type =  "weighted", nboot = NULL,
-                     inffunc = FALSE){
+                     inffunc = FALSE,  family = "gaussian"){
   #-----------------------------------------------------------------------------
   # D as vector
   D <- as.vector(D)
@@ -97,17 +97,17 @@ drdid_rc1 <-function(y, post, D, covariates, i.weights = NULL,
   # Avoid divide by zero
   ps.fit <- pmin(ps.fit, 1 - 1e-16)
   #Compute the Outcome regression for the control group at the pre-treatment period, using ols.
-  reg.coeff.pre <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.coeff.pre <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                          subset = ((D==0) & (post==0)),
-                                         weights = i.weights))
+                                         weights = i.weights,  family = family))
   if(anyNA(reg.coeff.pre)){
     stop("Outcome regression model coefficients have NA components. \n Multicollinearity (or lack of variation) of covariates is a likely reason.")
   }
   out.y.pre <-   as.vector(tcrossprod(reg.coeff.pre, int.cov))
   #Compute the Outcome regression for the control group at the pre-treatment period, using ols.
-  reg.coeff.post <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.coeff.post <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                           subset = ((D==0) & (post==1)),
-                                          weights = i.weights))
+                                          weights = i.weights,  family = family))
   if(anyNA(reg.coeff.post)){
     stop("Outcome regression model coefficients have NA components. \n Multicollinearity (or lack of variation) of covariates is a likely reason.")
   }
