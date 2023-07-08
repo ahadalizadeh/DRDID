@@ -130,7 +130,7 @@ NULL
 drdid <- function(yname, tname, idname, dname, xformla = NULL, data,
                   panel = TRUE, estMethod = c("imp", "trad"), weightsname = NULL,
                   boot = FALSE, boot.type =  c("weighted", "multiplier"),
-                  nboot = 999, inffunc = FALSE) {
+                  nboot = 999, inffunc = FALSE, family = "gaussian") {
   #-----------------------------------------------------------------------------
   # Pre-process data
   dp <- pre_process_drdid(
@@ -195,7 +195,7 @@ drdid <- function(yname, tname, idname, dname, xformla = NULL, data,
         boot = dp$boot,
         boot.type = dp$boot.type,
         nboot = dp$nboot,
-        inffunc = dp$inffunc
+        inffunc = dp$inffunc, family =family
       )
       ps.flag <- att_est$ps.flag
 
@@ -209,7 +209,7 @@ drdid <- function(yname, tname, idname, dname, xformla = NULL, data,
         boot = dp$boot,
         boot.type = dp$boot.type,
         nboot = dp$nboot,
-        inffunc = dp$inffunc
+        inffunc = dp$inffunc, family =family
       )
       ps.flag <- NULL
 
