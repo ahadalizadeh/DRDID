@@ -73,7 +73,7 @@ NULL
 #' @export
 
 drdid_imp_rc <- function(y, post, D, covariates, i.weights = NULL, boot = FALSE,
-                         boot.type =  "weighted",  nboot = NULL, inffunc = FALSE){
+                         boot.type =  "weighted",  nboot = NULL, inffunc = FALSE, family = "gaussian"){
   #-----------------------------------------------------------------------------
   # D as vector
   D <- as.vector(D)
@@ -102,22 +102,22 @@ drdid_imp_rc <- function(y, post, D, covariates, i.weights = NULL, boot = FALSE,
   ps.fit <- as.vector(pscore.ipt$pscore)
   ps.fit <- pmin(ps.fit, 1 - 1e-16)
   #Compute the Outcome regression for the control group
-  out.y.cont.pre <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = TRUE, treat = FALSE)
+  out.y.cont.pre <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = TRUE, treat = FALSE,  family = family)
   out.y.cont.pre <-  as.vector(out.y.cont.pre$out.reg)
-  out.y.cont.post <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = FALSE, treat = FALSE)
+  out.y.cont.post <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = FALSE, treat = FALSE,  family = family)
   out.y.cont.post <-  as.vector(out.y.cont.post$out.reg)
   # Combine the ORs
   out.y.cont <- post * out.y.cont.post + (1 - post) * out.y.cont.pre
   #-----------------------------------------------------------------------------
   #Compute the Outcome regression for the treated group at the pre-treatment period, using ols.
-  reg.treat.coeff.pre <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.treat.coeff.pre <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                                subset = ((D==1) & (post==0)),
-                                               weights = i.weights))
+                                               weights = i.weights,  family = family))
   out.y.treat.pre <-   as.vector(tcrossprod(reg.treat.coeff.pre, int.cov))
   #Compute the Outcome regression for the treated group at the post-treatment period, using ols.
-  reg.treat.coeff.post <- stats::coef(stats::lm(y ~ -1 + int.cov,
+  reg.treat.coeff.post <- stats::coef(stats::glm(y ~ -1 + int.cov,
                                                 subset = ((D==1) & (post==1)),
-                                                weights = i.weights))
+                                                weights = i.weights,  family = family))
   out.y.treat.post <-   as.vector(tcrossprod(reg.treat.coeff.post, int.cov))
   #-----------------------------------------------------------------------------
   # First, the weights
