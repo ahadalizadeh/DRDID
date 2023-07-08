@@ -76,7 +76,7 @@ NULL
 
 drdid_imp_rc1 <- function(y, post, D, covariates, i.weights = NULL,
                           boot = FALSE, boot.type =  "weighted", nboot = NULL,
-                          inffunc = FALSE){
+                          inffunc = FALSE,  family = "gaussian"){
   #-----------------------------------------------------------------------------
   # D as vector
   D <- as.vector(D)
@@ -106,9 +106,9 @@ drdid_imp_rc1 <- function(y, post, D, covariates, i.weights = NULL,
   ps.fit <- as.vector(pscore.ipt$pscore)
   ps.fit <- pmin(ps.fit, 1 - 1e-16)
   #Compute the Outcome regression for the control group
-  out.y.pre <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = TRUE, treat = FALSE)
+  out.y.pre <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = TRUE, treat = FALSE,  family = family)
   out.y.pre <-  as.vector(out.y.pre$out.reg)
-  out.y.post <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = FALSE, treat = FALSE)
+  out.y.post <- wols_rc(y, post, D, int.cov, ps.fit, i.weights, pre = FALSE, treat = FALSE,  family = family)
   out.y.post <-  as.vector(out.y.post$out.reg)
   # Combine the ORs
   out.y <- post * out.y.post + (1 - post) * out.y.pre
